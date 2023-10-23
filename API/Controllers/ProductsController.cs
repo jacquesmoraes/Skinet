@@ -1,4 +1,6 @@
 ﻿
+using API.Dtos;
+using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
@@ -15,42 +17,46 @@ namespace API.Controllers
         private readonly IGenericRepository<Product> _products;
         private readonly IGenericRepository<ProductBrand> _prodBrands;
         private readonly IGenericRepository<ProductType> _prodTypes;
+        private readonly IMapper _mapper;
 
         public ProductsController(IGenericRepository<Product> products,
             IGenericRepository<ProductBrand> prodBrands,
-            IGenericRepository<ProductType> prodTypes)
+            IGenericRepository<ProductType> prodTypes,
+            IMapper mapper)
         {
             _products = products;
             _prodBrands = prodBrands;
             _prodTypes = prodTypes;
+            _mapper = mapper;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
         {
             var spec = new ProductsWithTypesAndBrandsSpecification();
-            return Ok(await _products.ListAsync(spec));
-            
+            var products = await _products.ListAsync(spec);
+            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
-            return await _products.GetByIdAsync(id);
-           
+            var spec = new ProductsWithTypesAndBrandsSpecification(id);
+            var product = await _products.GetEntityWithSpec(spec);
+            return _mapper.Map<Product, ProductToReturnDto>(product);
         }
 
         [HttpGet("brands")]
-        
+
         public async Task<ActionResult<List<ProductBrand>>> GetBrands()
         {
-           return Ok(await _prodBrands.ListAllAsync());
+            return Ok(await _prodBrands.ListAllAsync());
         }
-        
+
         [HttpGet("types")]
 
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetTypes()
         {
             return Ok(await _prodBrands.ListAllAsync());
-          
+
         }
     }
 }
