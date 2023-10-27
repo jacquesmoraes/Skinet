@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
 {
-    public class ApplicationServicesExtension
+    public static class ApplicationServicesExtension
     {
-        public static IServiceCollection AddAplicationServices(IServiceCollection Services, IConfiguration config)
+        public static IServiceCollection AddAplicationServices(this IServiceCollection Services, IConfiguration config)
         {
-            // Add services to the container.
+         
 
             Services.AddControllers();
             Services.AddScoped<IProductRepository, ProductRepository>();

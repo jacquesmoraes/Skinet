@@ -1,12 +1,11 @@
-using API.Errors;
+using API.Extensions;
 using API.Middleware;
-using Core.Interfaces;
 using Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// Add services to the container.
+builder.Services.AddAplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
