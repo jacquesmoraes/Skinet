@@ -36,9 +36,12 @@ namespace API.Extensions
             });
             Services.AddCors(opt =>
             {
-                opt.AddPolicy("CorsPolicy", policy =>
-                {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://locahost:4200");
+                opt.AddPolicy(
+                    name: "AllowOrigin", 
+                    builder  => {
+                        builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                 });
             });
             return Services;
