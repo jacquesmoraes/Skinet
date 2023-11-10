@@ -3,6 +3,8 @@ using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace API.Extensions
 {
@@ -18,6 +20,12 @@ namespace API.Extensions
             Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlite(config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("cannot create 'DefaultConnection' on database")));
             Services.AddEndpointsApiExplorer();
+            Services.AddSingleton<IConnectionMultiplexer>(x => {
+                var options =ConfigurationOptions.Parse(config.
+                GetConnectionString("Redis"));
+                return ConnectionMultiplexer.Connect(options);
+            });
+            Services.AddScoped<IBasketRepository, BasketRepository>();
             Services.AddSwaggerGen();
             Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             Services.Configure<ApiBehaviorOptions>(options =>
