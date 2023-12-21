@@ -1,6 +1,7 @@
 ﻿using API.Errors;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,8 @@ namespace API.Extensions
 
             Services.AddControllers();
             Services.AddScoped<IProductRepository, ProductRepository>();
-            Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+             
+            Services.AddScoped<ITokenService, TokenService>();
             Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlite(config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("cannot create 'DefaultConnection' on database")));
             Services.AddEndpointsApiExplorer();
