@@ -17,7 +17,7 @@ namespace API.Extensions
 
             Services.AddControllers();
             Services.AddScoped<IProductRepository, ProductRepository>();
-             
+            Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddScoped<ITokenService, TokenService>();
             Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlite(config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("cannot create 'DefaultConnection' on database")));

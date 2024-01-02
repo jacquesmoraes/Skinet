@@ -17,8 +17,13 @@ bg-white fixed-top shadow-sm border-bottom">
         {{getCount(basket.items)}}
       </div>
     </a>
-    <a href="" class="btn btn-outline-secondary me-2">login</a>
-    <a href="" class="btn btn-outline-secondary me-3">sign in</a>
+    <ng-container *ngIf="(accountService.currentUser$ | async) === null">
+      <a routerLink="account/login" class="btn btn-outline-secondary me-2">login</a>
+      <a routerLink="account/register" class="btn btn-outline-secondary me-3">sign in</a>
+    </ng-container>
+    <ng-container *ngIf="accountService.currentUser$ | async as User">
+      <p>welcome {{User.displayName}}</p>
+    </ng-container>
   </div>
 
 </header>
