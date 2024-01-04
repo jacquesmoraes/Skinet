@@ -20,6 +20,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if(error){
           if(error.status === 400){
+            console.log('cacth error for interceptor 400 '+ error)
             if(error.error.errors){
               throw error.error;
             } else {
