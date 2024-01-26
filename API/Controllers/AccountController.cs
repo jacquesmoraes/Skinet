@@ -51,9 +51,7 @@ namespace API.Controllers
         [HttpGet("address")]
         public async Task<ActionResult<AddressDto>> GetUserAdress()
         {
-
-
-            var user = await _userManager.FindUserByClaimsPrincipleWithAdress(User);
+            var user = await _userManager.FindUserByClaimsPrincipleWithAdress(HttpContext.User);
 
             return _mapper.Map<Address, AddressDto>(user.Address);
         }
