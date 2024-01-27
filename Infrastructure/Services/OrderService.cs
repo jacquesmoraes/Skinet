@@ -1,4 +1,5 @@
-﻿using Core.Entities.OrderAggregate;
+﻿using Core.Entities;
+using Core.Entities.OrderAggregate;
 using Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,51 @@ namespace Infrastructure.Services
 {
     public class OrderService : IOrderService
     {
-        public Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethod, string basketId, Address address)
+        private readonly IGenericRepository<Order> _orderRepository;
+        private readonly IGenericRepository<DeliveryMethod> _deliveryRepo;
+        private readonly IGenericRepository<Product> _productRepo;
+        private readonly IBasketRepository _basketRepo;
+
+        public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<DeliveryMethod> deliveryRepo,
+            IGenericRepository<Product> productRepo, IBasketRepository basketRepo)
         {
-            throw new NotImplementedException();
+            _orderRepository = orderRepository;
+            _deliveryRepo = deliveryRepo;
+            _productRepo = productRepo;
+            _basketRepo = basketRepo;
+        }
+
+        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string basketId,
+            Address address)
+        {
+            //get basket from repo
+            var basket = await _basketRepo.GetBasketAsync(basketId);
+            
+            //get items from product repo
+            var items = new List<OrderItem>();
+            foreach (var item in basket.Items) 
+            {
+                var prodItems = await _productRepo.GetByIdAsync(item.Id);
+                var itemsOrdered = new ProductItemOrdered(prodItems.Id, prodItems.Name, prodItems.PictureUrl);
+                var orderItem = new OrderItem(itemsOrdered, prodItems.Price, item.Quantity);
+                items.Add(orderItem);
+            }
+
+            //get delivery method from repo
+            var deliveryMethod = await _deliveryRepo.GetByIdAsync(deliveryMethodId);
+            
+            //calculate subtotal
+            var subtotal = items.Sum(item => item.Price * item.Quantity);
+            
+            //create order
+            var order =new Order(items, buyerEmail, address,deliveryMethod, subtotal);
+
+            //TODO: save to database
+
+            //return order
+            return order;
+            
+
         }
 
         public Task<IReadOnlyList<Order>> CreateOrderForUserAsync(string buyerEmail)
