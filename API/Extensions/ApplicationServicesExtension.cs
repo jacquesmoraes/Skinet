@@ -4,7 +4,6 @@ using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace API.Extensions
@@ -13,23 +12,27 @@ namespace API.Extensions
     {
         public static IServiceCollection AddAplicationServices(this IServiceCollection Services, IConfiguration config)
         {
-         
+
 
             Services.AddControllers();
             Services.AddScoped<IProductRepository, ProductRepository>();
+
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddScoped<ITokenService, TokenService>();
+            Services.AddScoped<IUnitOfWork, UnitOfWork>();
             Services.AddScoped<IOrderService, OrderService>();
+            Services.AddScoped<IBasketRepository, BasketRepository>();
             Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlite(config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("cannot create 'DefaultConnection' on database")));
-            
-            Services.AddSingleton<IConnectionMultiplexer>(x => {
-                var options =ConfigurationOptions.Parse(config.
+
+            Services.AddSingleton<IConnectionMultiplexer>(x =>
+            {
+                var options = ConfigurationOptions.Parse(config.
                 GetConnectionString("Redis"));
                 return ConnectionMultiplexer.Connect(options);
             });
-            Services.AddScoped<IBasketRepository, BasketRepository>();
-            
+           
+
             Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             Services.Configure<ApiBehaviorOptions>(options =>
                 options.InvalidModelStateResponseFactory = actionContext =>
@@ -48,12 +51,13 @@ namespace API.Extensions
             Services.AddCors(opt =>
             {
                 opt.AddPolicy(
-                    name: "AllowOrigin", 
-                    builder  => {
+                    name: "AllowOrigin",
+                    builder =>
+                    {
                         builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
-                });
+                    });
             });
             return Services;
         }

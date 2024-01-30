@@ -25,7 +25,8 @@ namespace Infrastructure.Data
                 var product = File.ReadAllText("../Infrastructure/Data/SeedData/products.json");
                 var products = JsonSerializer.Deserialize<List<Product>>(product);
                 context.Products.AddRange(products);
-            } if (!context.DeliveryMethods.Any())
+            }
+            if (!context.DeliveryMethods.Any())
             {
                 var deliveryData = File.ReadAllText("../Infrastructure/Data/SeedData/delivery.json");
                 var methods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryData);

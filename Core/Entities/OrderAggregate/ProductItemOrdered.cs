@@ -8,15 +8,20 @@ namespace Core.Entities.OrderAggregate
 {
     public class ProductItemOrdered
     {
-        public int Id { get; set; }
-        public ProductItemOrdered(int productItem, string productName, string pictureUrl)
+
+       
+        public ProductItemOrdered(int productItemId, string productName, string pictureUrl)
         {
-            ProductItem = productItem;
+            ProductItemId = productItemId;
             ProductName = productName;
             PictureUrl = pictureUrl;
         }
 
-        public int ProductItem { get; set; }
+        public ProductItemOrdered()
+        {
+        }
+
+        public int ProductItemId { get; set; }
         public string ProductName { get; set; }
         public string PictureUrl { get; set; }
     }
